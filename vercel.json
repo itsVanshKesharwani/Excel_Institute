@@ -1,21 +1,7 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "services": {
-    "backend": {
-      "root": "backend",
-      "framework": "express"
-    },
-    "coaching": {
-      "root": "coaching",
-      "framework": "vite"
-    }
-  },
+  "buildCommand": "cd coaching && npm install && npm run build",
+  "outputDirectory": "coaching/dist",
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": {
-        "service": "backend"
-      }
-    }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

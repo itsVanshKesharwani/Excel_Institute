@@ -4,19 +4,33 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
-app.use(cors());
+
+// Allow requests from your Vercel frontend
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    process.env.FRONTEND_URL || "*"
+  ],
+  credentials: true
+}));
+
 app.use(express.json());
 
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/admission", require("./routes/admission"));
 app.use("/api/admin", require("./routes/admin"));
 
+// Health check route
+app.get("/", (req, res) => res.json({ status: "Backend running ✅" }));
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB connected");
-    app.listen(process.env.PORT || 5000, () =>
-      console.log("Server running on port " + (process.env.PORT || 5000))
-    );
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => console.log("Server running on port " + PORT));
   })
-  .catch((err) => console.log("DB error:", err.message));
+  .catch((err) => {
+    console.error("DB connection error:", err.message);
+    process.exit(1);
+  });
